@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null && request.auth.token.firebase.sign_in_provider == 'google.com'; }
+  function admin() { return signedIn() && request.auth.token.admin == true; }
+  match /users/{uid} { allow read: if signedIn() && (request.auth.uid == uid || admin()); }
+  match /organizations/{id} { allow read: if resource.data.status == 'approved' || admin(); }
+  match /listings/{id} { allow read: if true; }
+  match /reservations/{id} { allow read: if signedIn() && (request.auth.uid == resource.data.ngoUid || request.auth.uid == resource.data.hostelUid || admin()); }
+  match /reports/{id} { allow read: if admin(); }
+  // Writes and private pickup reads require authenticated Cloud Functions.
+  match /{document=**} { allow write: if false; }
+ }
+}

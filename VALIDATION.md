@@ -1,0 +1,4 @@
+# Validation
+19 September 2026: six Node domain tests pass, covering overbooking, invalid quantities and arrival times, closed/expired listings, partial collections, repeated collection and listing validation. Three additional callable-function tests pass for rejecting unauthenticated requests, non-Google providers and unverified emails. JavaScript syntax and static build pass. Desktop and 390px mobile browser checks performed; menu opens, Google-only sign-in screen renders and no horizontal overflow observed. Initial low-contrast heading issue corrected.
+
+Pending: Firebase backend deployment, rules/emulator verification (Java runtime unavailable locally), authorized-domain configuration, real Google sign-in, permanent role and approval workflow, and simultaneous live reservations. Firebase console reports Spark billing and insufficient Authentication management permissions for current console account. No production test records created.

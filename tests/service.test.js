@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {integer,reserveQuantities,settleQuantities,validateListing} from '../functions/domain.js';
+const now=1800000000000;
+const listing=()=>({open:true,total:50,reserved:0,collected:0,deadline:now+3600000});
+test('reservations consume availability; a second oversized reservation fails',()=>{const l=listing();Object.assign(l,reserveQuantities(l,30,now+1000,now));assert.equal(l.reserved,30);assert.throws(()=>reserveQuantities(l,21,now+1000,now),/Not enough/);});
+test('closed and expired listings cannot be reserved',()=>{assert.throws(()=>reserveQuantities({...listing(),open:false},1,now+1000,now));assert.throws(()=>reserveQuantities({...listing(),deadline:now},1,now,now));});
+test('invalid quantities and arrival times are rejected',()=>{for(const n of [0,-1,1.5,NaN,Infinity,'2'])assert.throws(()=>integer(n,'Quantity'));for(const eta of [now-1,now+4000000,NaN])assert.throws(()=>reserveQuantities(listing(),1,eta,now));});
+test('partial collection releases the full reservation but counts only collected boxes',()=>{assert.deepEqual(settleQuantities({...listing(),reserved:20},{status:'reserved',quantity:20},12),{reserved:0,collected:12});});
+test('finalized pickups cannot be collected twice',()=>{assert.throws(()=>settleQuantities(listing(),{status:'collected',quantity:20},20));});
+test('listing validation rejects future preparation, old deadlines and strips arbitrary ownership',()=>{const d={name:'Meal',description:'Rice and dal',ingredients:'Rice, lentils',allergens:'None known',storage:'Keep covered',packaging:'Food-grade boxes',area:'Campus mess',type:'Vegetarian',total:20,portions:1,prepared:now-1000,deadline:now+1000,hostelUid:'attacker'};const valid=validateListing(d,now);assert.equal(valid.city,'Mathura');assert.equal(valid.hostelUid,undefined);assert.throws(()=>validateListing({...d,prepared:now+100},now));assert.throws(()=>validateListing({...d,deadline:now-1},now));});

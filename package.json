@@ -1,0 +1,12 @@
+{
+  "name": "mealbridge",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node build.mjs",
+    "test": "node --test tests/service.test.js",
+    "test:auth": "node --test tests/auth.test.js"
+  }
+}
