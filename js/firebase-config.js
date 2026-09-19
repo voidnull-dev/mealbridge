@@ -8,3 +8,5 @@ export const firebaseConfig = {
   measurementId: 'G-SD5RSS447H'
 };
 export const functionsRegion = 'asia-south1';
+
+
